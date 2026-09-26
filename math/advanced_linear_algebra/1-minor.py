@@ -4,41 +4,35 @@
 
 def determinant(matrix):
     """Function that calculates the determinant of a matrix"""
+    if len(matrix) == 1 and len(matrix[0]) == 1:
+        return matrix[0][0]
     if len(matrix) == 2:
-        return ((matrix[0][0] * matrix[1][1]) - (matrix[0][1] * matrix[1][0]))
-    det = []
-    for i in range(len(matrix)):
-        mini = [[j for j in matrix[i]] for i in range(1, len(matrix))]
-        for j in range(len(mini)):
-            mini[j].pop(i)
-        if i % 2 == 0:
-            det.append(matrix[0][i] * determinant(mini))
-        if i % 2 == 1:
-            det.append(-1 * matrix[0][i] * determinant(mini))
-    return sum(det)
+        return (matrix[0][0] * matrix[1][1]) - (matrix[0][1] * matrix[1][0])
+    det = 0
+    for col in range(len(matrix)):
+        sub = [row[:col] + row[col + 1:] for row in matrix[1:]]
+        sign = 1 if col % 2 == 0 else -1
+        det += sign * matrix[0][col] * determinant(sub)
+    return det
 
 
 def minor(matrix):
     """Function that calculates the minor matrix of a matrix"""
-    if type(matrix) is not list or len(matrix) == 0:
+    if type(matrix) is not list or len(matrix) == 0 or \
+            not all(type(row) is list for row in matrix):
         raise TypeError("matrix must be a list of lists")
-    for i in matrix:
-        if type(i) is not list:
-            raise TypeError("matrix must be a list of lists")
-    for i in matrix:
-        if len(matrix) != len(i):
-            raise ValueError("matrix must be a non-empty square matrix")
-    if len(matrix) == 1 and len(matrix) == 1:
+    if any(len(row) != len(matrix) for row in matrix):
+        raise ValueError("matrix must be a non-empty square matrix")
+
+    if len(matrix) == 1:
         return [[1]]
-    if len(matrix) == 2:
-        minor = [i[::-1] for i in matrix]
-        return minor[::-1]
-    minor = [[j for j in matrix[i]] for i in range(len(matrix))]
+
+    result = []
     for i in range(len(matrix)):
-        for j in range(len(matrix[i])):
-            mini = [[j for j in matrix[i]] for i in range(len(matrix))]
-            mini = mini[:i] + mini[i + 1:]
-            for k in range(len(mini)):
-                mini[k].pop(j)
-            minor[i][j] = determinant(mini)
-    return minor`
+        result_row = []
+        for j in range(len(matrix)):
+            sub = [row[:j] + row[j + 1:]
+                   for k, row in enumerate(matrix) if k != i]
+            result_row.append(determinant(sub))
+        result.append(result_row)
+    return result
