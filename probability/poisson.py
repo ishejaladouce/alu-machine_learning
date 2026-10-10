@@ -37,3 +37,4 @@ class Poisson:
         for i in range(k + 1):
             prob = prob + self.pmf(i)
         return prob
+    
