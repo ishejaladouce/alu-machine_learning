@@ -13,25 +13,27 @@ class Poisson:
         else:
             if type(data) != list:
                 raise TypeError("data must be a list")
-            if len(data) <= 2:
+            if len(data) < 2:
                 raise ValueError("data must contain multiple values")
-            self.lambtha = (sum(data)/len(data))
+            self.lambtha = float(sum(data) / len(data))
 
     def pmf(self, k):
         """Calculates the value of the PMF for a given number of 'successes'"""
+        k = int(k)
         if k < 0:
             return 0
         factorial = 1
-        for i in range(1, int(k)+1):
+        for i in range(1, k + 1):
             factorial = factorial * i
-        return (((2.7182818285**-(self.lambtha))*(self.lambtha**int(k)))
+        return ((2.7182818285 ** -self.lambtha) * (self.lambtha ** k)
                 / factorial)
 
     def cdf(self, k):
         """Calculates the value of the CDF for a given number of 'successes'"""
-        if k <= self.n:
+        k = int(k)
+        if k < 0:
             return 0
         prob = 0
-        for i in range(int(k)+1):
+        for i in range(k + 1):
             prob = prob + self.pmf(i)
-        return (prob)
+        return prob
